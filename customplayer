@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BootStrap Forms</title>
+    <link href="../Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="settings.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: Segoe UI, Arial, Helvetica, Sans-Serif;
+            font-size: 0.8em;
+        }
+
+        #playPause {
+            width: 55px;
+        }
+
+        video {
+            width: 640px;
+            height: 360px;
+        }
+
+        #scrubber {
+            width: 560px;
+        }
+    </style>
+    <script src="../Scripts/jquery-2.0.3.min.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            var video = document.querySelector("#vid");
+            remainingTime = $("#remainingTime");
+            totalTime = $("#totalTime");
+            playPause = $("#playPause");
+            stop = $("#stop");
+            begin = $("#begin");
+            rewind = $("#rewind");
+            fastForward = $("#fastForward");
+            end = $("#end");
+            volume = $("#volume");
+            mute = $("#mute");
+            scrubber = $("#scrubber");
+            playbackRate = $("#playbackRate");
+                
+            TIME_STEP = 5;
+
+                
+
+            playPause.click(function () {
+                if (video.paused || video.ended) {
+                    video.play();
+                    playPause.text('Pause')
+                }
+                else {
+                    video.pause();
+                    playPause.text('Play')
+                }
+            });
+
+            stop.click(function () {
+                video.pause();
+                video.currentTime = 0;
+                playPause.text('Play')
+                video.playbackRate = 1;
+                playbackRate.val(1);
+            });
+
+            begin.click(function () {
+                video.currentTime = 0;
+            });
+
+            rewind.click(function () {
+                video.currentTime -= TIME_STEP;
+            });
+
+            fastForward.click(function () {
+                video.currentTime += TIME_STEP;
+            });
+            end.click(function () {
+                video.currentTime = video.duration;
+                playPause.text('play');
+            });
+
+            volume.change(function () {
+                video.volume = this.value;
+            });
+
+            var vol = 0;
+            mute.click(function () {
+
+                if (!video.muted) {
+                    vol = volume.val();
+                }
+                video.muted = !video.muted;
+
+                if (!video.muted) {
+                    volume.val(vol);
+                    mute.text("Mute");
+                }
+                else {
+                    volume.val(0);
+                    mute.text("Unmute");
+                }
+            });
+            scrubber.change(function () {
+                video.currentTime = this.value;
+            });
+
+            playbackRate.change(function () {
+                video.playbackRate = this.value;
+            });
+
+            video.addEventListener('play', function () {
+                totalTime.text(formatTime(video.duration));
+            });
+
+            video.addEventListener('timeupdate', function () {
+                remainingTime.text(formatTime(video.currentTime));
+                scrubber.val(video.currentTime);
+
+            });
+
+            function formatTime(seconds) {
+                seconds = Math.round(seconds);
+                var minutes = 0;
+                if (seconds >= 60) {
+                    minutes = Math.floor(seconds / 60);
+                    seconds = (seconds - (minutes * 60));
+                }
+
+                seconds = seconds + "";
+                if (seconds.length == 1) {
+                    seconds = '0' + seconds;
+                }
+
+                return minutes + ':' + seconds;
+            };
+
+        });
+    </script>
+</head>
+<body>
+    <h4>Video</h4>
+    <video width="320" poster="../Images/bbb.png" id="vid">
+        <source src="../Media/big_buck_bunny.mp4" type="video/mp4" />
+        <source src="../Media/big_buck_bunny.ogv" type="video/ogg" />
+        <source src="../Media/big_buck_bunny.webm" type="video/webm" />
+        <p>This Browser not support native video </p>
+    </video>
+    <div>
+        <input type="range" id="scrubber" min="0" max="60" value="0" step="1" />
+        <span id="remainingTime">0:00</span> / <span id="totalTime">0:00</span>
+    </div>
+
+    <div>
+
+        <button class="btn" id="playPause">Play</button>
+        <button class="btn" id="stop">Stop</button>
+        <button class="btn" id="begin">&lt; &lt;</button>
+        <button class="btn" id="rewind">&lt;</button>
+        <button class="btn" id="fastForward">&gt;</button>
+        <button class="btn" id="end">&gt; &gt;</button>
+    </div>
+
+    <div>
+        <input type="range" id="volume" min="0" max="1" step="0.1" />
+        <button class="btn" id="mute">Mute</button>
+    </div>
+
+    <div>
+        Speed
+        <input type="range" min="1" max="4" value="1" step="1" id="playbackRate" />
+    </div>
+
+
+</body>
+</html>
